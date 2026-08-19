@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google Places Lead Finder</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="wrap">
+  <h1>Google Places Lead Finder</h1>
+  <p class="subtitle">
+    Searches Google's official Places API for a business type across the
+    areas you list, then flags listings by review count and website
+    presence. Uses your Google Cloud billing account &mdash; no scraping.
+  </p>
+
+  <div class="notice">
+    This calls Google's real API, so pricing applies beyond the free
+    monthly allowance (currently 5,000 free searches + 1,000 free detail
+    lookups/month). See README.md for current rates before running large
+    searches. Note: Google's API does not expose claimed/unclaimed status,
+    so that filter isn't available here.
+  </div>
+
+  <form id="job-form">
+    <label>
+      Business type
+      <input type="text" id="search_term" placeholder="e.g. roofing contractors" required>
+    </label>
+
+    <label>
+      Areas to search (one per line &mdash; zip codes, cities, or "City, ST")
+      <textarea id="locations" rows="6" placeholder="85001&#10;Flagstaff, AZ&#10;Tucson, AZ" required></textarea>
+    </label>
+
+    <div class="row">
+      <label>
+        Search radius (miles) around each area
+        <input type="number" id="radius_miles" value="15" min="1" max="31">
+      </label>
+
+      <label>
+        Minimum reviews
+        <input type="number" id="min_reviews" value="1" min="0">
+      </label>
+
+      <label>
+        Website
+        <select id="website_filter">
+          <option value="any">Any</option>
+          <option value="no_website" selected>Only businesses WITHOUT a website</option>
+          <option value="has_website">Only businesses WITH a website</option>
+        </select>
+      </label>
+    </div>
+
+    <button type="submit" id="start-btn">Start search</button>
+  </form>
+
+  <div id="progress-panel" class="hidden">
+    <h2>Progress</h2>
+    <div id="error-banner" class="error-banner hidden"></div>
+    <div id="status-line">Starting...</div>
+    <div class="progress-bars">
+      <div class="bar-row">
+        <span>Areas searched</span>
+        <progress id="location-progress" value="0" max="1"></progress>
+        <span id="location-count">0 / 0</span>
+      </div>
+      <div class="bar-row">
+        <span>Businesses checked</span>
+        <progress id="enrich-progress" value="0" max="1"></progress>
+        <span id="enrich-count">0 / 0</span>
+      </div>
+    </div>
+    <div class="matches">Matches found so far: <strong id="matches-count">0</strong></div>
+
+    <button id="stop-btn" class="secondary">Stop</button>
+
+    <div id="downloads" class="downloads hidden">
+      <h3>Downloads</h3>
+      <a id="dl-filtered" href="#" class="hidden">Download matching leads (CSV)</a>
+      <a id="dl-leads" href="#" class="hidden">Download all checked businesses (CSV)</a>
+    </div>
+
+    <h3>Live preview (latest matches)</h3>
+    <table id="preview-table">
+      <thead>
+        <tr>
+          <th>Name</th><th>Area</th><th>Rating</th><th>Reviews</th>
+          <th>Website</th><th>Address</th><th>Phone</th>
+        </tr>
+      </thead>
+      <tbody id="preview-body"></tbody>
+    </table>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
